@@ -364,7 +364,7 @@ function set_globals {
   REPOLOCS[1]="https://github.com/mltframework/mlt.git"
   REPOLOCS[2]="https://github.com/dyne/frei0r.git"
   REPOLOCS[3]="https://github.com/mirror/x264.git"
-  REPOLOCS[4]="https://github.com/webmproject/libvpx.git"
+  REPOLOCS[4]="https://chromium.googlesource.com/webm/libvpx.git"
   REPOLOCS[5]="https://github.com/mltframework/swfdec.git"
   REPOLOCS[6]="https://ftp.osuosl.org/pub/blfs/conglomeration/lame/lame-3.99.5.tar.gz"
   REPOLOCS[7]="https://github.com/georgmartius/vid.stab.git"
@@ -902,40 +902,39 @@ function get_subproject {
   # Note that svn can check out to current directory, whereas git will not. Sigh.
   if test "git" = "$REPOTYPE" ; then
       # If the dir is there, check if it is a git repo
-      continue
-      # if test -d "$1" ; then
-      #     # Change to it
-      #     cmd cd $1 || die "Unable to change to directory $1"
-      #     debug "About to look for git repo"
-      #     git --no-pager status 2>&1 | grep "fatal" &> /dev/null
-      #     if test 0 != $? ; then
-      #         # Found git repo
-      #         debug "Found git repo, will update"
-      #         feedback_status "Pulling git sources for $1"
-      #         cmd git reset --hard || die "Unable to reset git tree for $1"
-      #         if [ "$1" = "rubberband" ]; then
-      #           MAIN_GIT_BRANCH=default
-      #         elif [ "$1" = "libvpx" ]; then
-      #           MAIN_GIT_BRANCH=main
-      #         else
-      #           MAIN_GIT_BRANCH=master
-      #         fi
-      #         cmd git checkout $MAIN_GIT_BRANCH || die "Unable to git checkout $MAIN_GIT_BRANCH"
-      #         cmd git --no-pager pull $REPOLOC $MAIN_GIT_BRANCH || die "Unable to git pull sources for $1"
-      #         cmd git checkout $REVISION || die "Unable to git checkout $REVISION"
-      #     else
-      #         # A dir with the expected name, but not a git repo, bailing out
-      #         PWD=`pwd`
-      #         die "Found a dir with the expected name $1 ($PWD), but it was not a git repo. Unable to proceed. If you have old mlt/mlt++ sources, please delete these directories, before rerunning the script."
-      #     fi
-      # else
-      #     # No git repo
-      #     debug "No git repo, need to check out"
-      #     feedback_status "Cloning git sources for $1"
-      #     cmd git --no-pager clone $REPOLOC || die "Unable to git clone source for $1 from $REPOLOC"
-      #     cmd cd $1 || die "Unable to change to directory $1"
-      #     cmd git checkout $REVISION || die "Unable to git checkout $REVISION"
-      # fi
+      if test -d "$1" ; then
+          # Change to it
+          cmd cd $1 || die "Unable to change to directory $1"
+          debug "About to look for git repo"
+          git --no-pager status 2>&1 | grep "fatal" &> /dev/null
+          if test 0 != $? ; then
+              # Found git repo
+              debug "Found git repo, will update"
+              feedback_status "Pulling git sources for $1"
+              cmd git reset --hard || die "Unable to reset git tree for $1"
+              if [ "$1" = "rubberband" ]; then
+                MAIN_GIT_BRANCH=default
+              elif [ "$1" = "libvpx" ]; then
+                MAIN_GIT_BRANCH=main
+              else
+                MAIN_GIT_BRANCH=master
+              fi
+              cmd git checkout $MAIN_GIT_BRANCH || die "Unable to git checkout $MAIN_GIT_BRANCH"
+              cmd git --no-pager pull $REPOLOC $MAIN_GIT_BRANCH || die "Unable to git pull sources for $1"
+              cmd git checkout $REVISION || die "Unable to git checkout $REVISION"
+          else
+              # A dir with the expected name, but not a git repo, bailing out
+              PWD=`pwd`
+              die "Found a dir with the expected name $1 ($PWD), but it was not a git repo. Unable to proceed. If you have old mlt/mlt++ sources, please delete these directories, before rerunning the script."
+          fi
+      else
+          # No git repo
+          debug "No git repo, need to check out"
+          feedback_status "Cloning git sources for $1"
+          cmd git --no-pager clone $REPOLOC || die "Unable to git clone source for $1 from $REPOLOC"
+          cmd cd $1 || die "Unable to change to directory $1"
+          cmd git checkout $REVISION || die "Unable to git checkout $REVISION"
+      fi
   elif test "svn" = "$REPOTYPE" ; then
       # Create subdir if not exist
       if test ! -d "$1" ; then
