@@ -31,9 +31,9 @@ FREI0R_REVISION=
 ENABLE_SWFDEC=0
 SWFDEC_HEAD=
 SWFDEC_REVISION=
-ENABLE_MOVIT=1
-MOVIT_HEAD=0
-MOVIT_REVISION="1.6.3"
+ENABLE_=1
+_HEAD=0
+_REVISION="1.6.3"
 LIBEPOXY_REVISION="v1.3.1"
 X264_HEAD=1
 X264_REVISION=
@@ -164,7 +164,7 @@ function to_key {
     vid.stab)
       echo 7
     ;;
-    movit)
+    )
       echo 8
     ;;
     libepoxy)
@@ -321,8 +321,8 @@ function set_globals {
   # Subdirs list, for number of common operations
   # Note, the function to_key depends on this
   SUBDIRS="$FFMPEG_PROJECT mlt"
-  if test "$ENABLE_MOVIT" = 1 && test "$MOVIT_HEAD" = 1 -o "$MOVIT_REVISION" != ""; then
-      SUBDIRS="libepoxy eigen movit $SUBDIRS"
+  if test "$ENABLE_" = 1 && test "$_HEAD" = 1 -o "$_REVISION" != ""; then
+      SUBDIRS="libepoxy eigen  $SUBDIRS"
   fi
   if test "$ENABLE_FREI0R" = 1 ; then
       SUBDIRS="frei0r $SUBDIRS"
@@ -368,7 +368,7 @@ function set_globals {
   REPOLOCS[5]="https://github.com/mltframework/swfdec.git"
   REPOLOCS[6]="https://downloads.sourceforge.net/project/lame/lame/3.99/lame-3.99.5.tar.gz?ts=gAAAAABnRdQeLrGV0hXdlxzvrSk92CSiqQ24648zeeQF7O0FiasTDvUnLwOQgS1Bc_ZCjOmAHa4fPihrgX0z8XSi-z2YHDOVEg%3D%3D&r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Flame%2Ffiles%2Flame%2F3.99%2Flame-3.99.5.tar.gz%2Fdownload"
   REPOLOCS[7]="https://github.com/georgmartius/vid.stab.git"
-  REPOLOCS[8]="https://git.sesse.net/movit/"
+  REPOLOCS[8]="https://github.com/ddennedy/movit.git"
   REPOLOCS[9]="https://github.com/anholt/libepoxy.git"
   REPOLOCS[10]="https://gitlab.com/libeigen/eigen.git"
   REPOLOCS[11]="https://github.com/mltframework/webvfx.git"
@@ -1368,7 +1368,7 @@ export LD_LIBRARY_PATH="\$INSTALL_DIR/lib":"\$INSTALL_DIR/lib/frei0r-1":\$LD_LIB
 export MLT_REPOSITORY="\$INSTALL_DIR/lib/mlt-7"
 export MLT_DATA="\$INSTALL_DIR/share/mlt-7"
 export MLT_PROFILES_PATH="\$INSTALL_DIR/share/mlt-7/profiles"
-export MLT_MOVIT_PATH="\$INSTALL_DIR/share/movit"
+export MLT_MOVIT_PATH="\$INSTALL_DIR/share/"
 export FREI0R_PATH="\$INSTALL_DIR/lib/frei0r-1":/usr/lib/frei0r-1:/usr/local/lib/frei0r-1:/opt/local/lib/frei0r-1
 export QT_PLUGIN_PATH="\$INSTALL_DIR/lib/qt"
 export QML2_IMPORT_PATH="\$INSTALL_DIR/lib/qml"
