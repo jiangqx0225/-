@@ -164,7 +164,7 @@ function to_key {
     vid.stab)
       echo 7
     ;;
-    )
+    movit)
       echo 8
     ;;
     libepoxy)
