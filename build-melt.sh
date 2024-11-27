@@ -366,7 +366,7 @@ function set_globals {
   REPOLOCS[3]="https://github.com/mirror/x264.git"
   REPOLOCS[4]="https://github.com/webmproject/libvpx.git"
   REPOLOCS[5]="https://github.com/mltframework/swfdec.git"
-  REPOLOCS[6]="https://downloads.sourceforge.net/project/lame/lame/3.99/lame-3.99.5.tar.gz?ts=gAAAAABnRdQeLrGV0hXdlxzvrSk92CSiqQ24648zeeQF7O0FiasTDvUnLwOQgS1Bc_ZCjOmAHa4fPihrgX0z8XSi-z2YHDOVEg%3D%3D&r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Flame%2Ffiles%2Flame%2F3.99%2Flame-3.99.5.tar.gz%2Fdownload"
+  REPOLOCS[6]="https://ftp.osuosl.org/pub/blfs/conglomeration/lame/lame-3.99.5.tar.gz"
   REPOLOCS[7]="https://github.com/georgmartius/vid.stab.git"
   REPOLOCS[8]="https://github.com/ddennedy/movit.git"
   REPOLOCS[9]="https://github.com/anholt/libepoxy.git"
