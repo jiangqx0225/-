@@ -1,16 +1,13 @@
+from datasets import DatasetDict
+from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments, Trainer
 import torch
 from torch.utils.data import Dataset, DataLoader
-from modelscope import AutoModelForCausalLM, AutoTokenizer
-from modelscope.msdatasets import MsDataset
+from datasets import load_dataset
 
-# 加载数据集
-ds = MsDataset.load('AI-ModelScope/ruozhiba', subset_name='post-annual', split='train')
+ds = load_dataset("fka/awesome-chatgpt-prompts")
 
-# 打印一条数据示例
-print(next(iter(ds)))
-
-model_name = "qwen/Qwen2.5-0.5B-Instruct"
-
+# 加载模型和分词器
+model_name = "Qwen/Qwen2.5-7B-Instruct"
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     torch_dtype="auto",
@@ -22,84 +19,44 @@ tokenizer = AutoTokenizer.from_pretrained(model_name)
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 
-# 自定义数据集类
-class CustomDataset(Dataset):
-    def __init__(self, dataset, tokenizer, max_length=512):
-        self.dataset = dataset
-        self.tokenizer = tokenizer
-        self.max_length = max_length
-        self.inputs = []
-        self.labels = []
-        self._preprocess()
+# 数据预处理函数
+def preprocess_function(examples):
+    acts = examples["act"]
+    prompts = examples["prompt"]
+    inputs = []
+    for act, prompt in zip(acts, prompts):
+        # 拼接 act 和 prompt，这里可以根据实际需求调整拼接方式
+        input_text = f"{act}: {prompt}"
+        inputs.append(input_text)
+    model_inputs = tokenizer(inputs, truncation=True, padding="max_length", max_length=512)
 
-    def _preprocess(self):
-        for example in self.dataset:
-            content = example["content"]
-            inputs = self.tokenizer(content, truncation=True, padding="max_length", max_length=self.max_length, return_tensors="pt")
-            input_ids = inputs["input_ids"].squeeze(0)
-            attention_mask = inputs["attention_mask"].squeeze(0)
+    # 对于因果语言模型，标签通常和输入 ID 相同
+    model_inputs["labels"] = model_inputs["input_ids"].copy()
+    return model_inputs
 
-            # 对于因果语言模型，标签通常和输入 ID 相同
-            labels = input_ids.clone()
-            self.inputs.append({
-                "input_ids": input_ids,
-                "attention_mask": attention_mask
-            })
-            self.labels.append(labels)
+# 对数据集进行预处理
+tokenized_datasets = ds.map(preprocess_function, batched=True)
 
-    def __len__(self):
-        return len(self.dataset)
+# 定义训练参数
+training_args = TrainingArguments(
+    output_dir='./results',
+    num_train_epochs=3,
+    per_device_train_batch_size=2,
+    save_steps=10_000,
+    save_total_limit=2,
+    prediction_loss_only=True,
+    learning_rate=2e-5
+)
 
-    def __getitem__(self, idx):
-        return {
-            "input_ids": self.inputs[idx]["input_ids"],
-            "attention_mask": self.inputs[idx]["attention_mask"],
-            "labels": self.labels[idx]
-        }
+# 初始化 Trainer
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=tokenized_datasets["train"]
+)
 
-# 创建自定义数据集实例
-custom_dataset = CustomDataset(ds, tokenizer)
-
-# 设置训练参数
-batch_size = 2
-learning_rate = 1e-5
-num_epochs = 3
-
-# 创建数据加载器
-train_dataloader = DataLoader(custom_dataset, batch_size=batch_size, shuffle=True)
-
-# 定义优化器
-optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-
-# 训练循环
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model.to(device)
-model.train()
-
-for epoch in range(num_epochs):
-    total_loss = 0
-    for batch in train_dataloader:
-        input_ids = batch["input_ids"].to(device)
-        attention_mask = batch["attention_mask"].to(device)
-        labels = batch["labels"].to(device)
-
-        # 前向传播
-        outputs = model(input_ids, attention_mask=attention_mask, labels=labels)
-        loss = outputs.loss
-
-        # 反向传播和参数更新
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-
-        total_loss += loss.item()
-
-    print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {total_loss / len(train_dataloader)}")
-
-print("Training completed!")
+# 开始训练
+trainer.train()
 
 # 保存训练后的模型
-model_save_path = "trained_qwen_model"
-model.save_pretrained(model_save_path)
-tokenizer.save_pretrained(model_save_path)
-print(f"Model and tokenizer saved to {model_save_path}")
+trainer.save_model('trained_qwen_model')
