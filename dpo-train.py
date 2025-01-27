@@ -10,3 +10,9 @@ train_dataset = load_dataset("trl-lib/ultrafeedback_binarized", split="train")
 training_args = DPOConfig(output_dir="Qwen2-0.5B-DPO", logging_steps=10)
 trainer = DPOTrainer(model=model, args=training_args, processing_class=tokenizer, train_dataset=train_dataset)
 trainer.train()
+
+save_directory = "./dpo_trained"
+model.save_pretrained(save_directory)
+tokenizer.save_pretrained(save_directory)
+
+print(f"Model and tokenizer saved to {save_directory}")
