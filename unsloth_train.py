@@ -1,13 +1,21 @@
 from unsloth import FastLanguageModel 
 from unsloth import is_bfloat16_supported
 import torch
+import json
 from trl import SFTTrainer
 from transformers import TrainingArguments
-from datasets import load_dataset
+from datasets import load_dataset, Dataset
 max_seq_length = 2048 # Supports RoPE Scaling interally, so choose any!
 # Get LAION dataset
-url = "https://huggingface.co/datasets/laion/OIG/resolve/main/unified_chip2.jsonl"
-dataset = load_dataset("json", data_files = {"train" : url}, split = "train")
+
+model_path=""
+data_path=""
+
+with open(data_path, 'r', encoding='utf-8') as f:
+    data = json.load(f)
+
+# 将数据转换为 Dataset 对象
+dataset = Dataset.from_list(data)
 
 # 4bit pre quantized models we support for 4x faster downloading + no OOMs.
 fourbit_models = [
@@ -23,7 +31,7 @@ fourbit_models = [
 ] # More models at https://huggingface.co/unsloth
 
 model, tokenizer = FastLanguageModel.from_pretrained(
-    model_name = "unsloth/llama-3-8b-bnb-4bit",
+    model_name = model_path,
     max_seq_length = max_seq_length,
     dtype = None,
     load_in_4bit = True,
