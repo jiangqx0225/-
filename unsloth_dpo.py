@@ -9,6 +9,11 @@ import torch
 from transformers import TrainingArguments
 from trl import DPOTrainer
 
+with open('./ruozhiba/data/ruozhiba-post-annual.json', 'r', encoding='utf-8') as f:
+    data = json.load(f)
+
+dataset = Dataset.from_list(data)
+
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name = "unsloth/zephyr-sft-bnb-4bit",
     max_seq_length = max_seq_length,
@@ -47,7 +52,7 @@ dpo_trainer = DPOTrainer(
         output_dir = "outputs",
     ),
     beta = 0.1,
-    train_dataset = YOUR_DATASET_HERE,
+    train_dataset = dataset,
     # eval_dataset = YOUR_DATASET_HERE,
     tokenizer = tokenizer,
     max_length = 1024,
