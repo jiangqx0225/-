@@ -9,6 +9,9 @@ import torch
 from transformers import TrainingArguments
 from trl import DPOTrainer
 
+import json
+from datasets import Dataset
+
 with open('./ruozhiba/data/ruozhiba-post-annual.json', 'r', encoding='utf-8') as f:
     data = json.load(f)
 
