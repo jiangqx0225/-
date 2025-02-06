@@ -1,4 +1,3 @@
-python
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "0" # Optional set GPU device ID
 
