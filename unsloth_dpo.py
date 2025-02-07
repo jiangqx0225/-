@@ -11,7 +11,12 @@ from trl import DPOTrainer
 import json
 from datasets import Dataset
 
-with open('./ruozhiba/data/ruozhiba-post-annual.json', 'r', encoding='utf-8') as f:
+save_path = ""
+data_path = ""
+
+max_seq_length = 4096
+
+with open(data_path, 'r', encoding='utf-8') as f:
     data = json.load(f)
 
 dataset = Dataset.from_list(data)
@@ -61,3 +66,5 @@ dpo_trainer = DPOTrainer(
     max_prompt_length = 512,
 )
 dpo_trainer.train()
+
+model.save_pretrained_merged(save_path, tokenizer, args.save_method)
