@@ -23,4 +23,4 @@ for item in original_data:
 
 # Print the transformed data
 with open("./cleaned_data.json" , "w", encoding="utf-8") as outf:
-  json.dumps(transformed_data, outf, ensure_ascii=False, indent=4)
+  json.dump(transformed_data, outf, ensure_ascii=False, indent=4)
