@@ -1,34 +1,3 @@
-#!/usr/bin/env python3
-
-"""
-🦥 Starter Script for Fine-Tuning FastLanguageModel with Unsloth
-
-This script is designed as a starting point for fine-tuning your models using unsloth.
-It includes configurable options for model loading, PEFT parameters, training arguments, 
-and model saving/pushing functionalities.
-
-You will likely want to customize this script to suit your specific use case 
-and requirements.
-
-Here are a few suggestions for customization:
-    - Modify the dataset loading and preprocessing steps to match your data.
-    - Customize the model saving and pushing configurations.
-
-Usage: (most of the options have valid default values this is an extended example for demonstration purposes)
-    python unsloth-cli.py --model_name "unsloth/llama-3-8b" --max_seq_length 8192 --dtype None --load_in_4bit \
-    --r 64 --lora_alpha 32 --lora_dropout 0.1 --bias "none" --use_gradient_checkpointing "unsloth" \
-    --random_state 3407 --use_rslora --per_device_train_batch_size 4 --gradient_accumulation_steps 8 \
-    --warmup_steps 5 --max_steps 400 --learning_rate 2e-6 --logging_steps 1 --optim "adamw_8bit" \
-    --weight_decay 0.005 --lr_scheduler_type "linear" --seed 3407 --output_dir "outputs" \
-    --report_to "tensorboard" --save_model --save_path "model" --quantization_method "f16" \
-    --push_model --hub_path "hf/model" --hub_token "your_hf_token"
-
-To see a full list of configurable options, use:
-    python unsloth-cli.py --help
-
-Happy fine-tuning!
-"""
-
 import argparse
 import os
 import json
@@ -97,17 +66,20 @@ def run(args):
     # else:
     #     # Load and format dataset
     #     dataset = load_dataset(args.dataset, split="train")
-    data = []
-    count = 0
+    # data = []
+    # count = 0
+    # with open(args.dataset, 'r', encoding='utf-8') as f:
+    #     for line in f:
+    #         try:
+    #             l_data = json.loads(line)
+    #             data.append(l_data)
+    #         except Exception as e:
+    #             count += 1
+    # print(f"Total data size: {len(data)}")
+    # print(f"Total Error line(s): {count}")
+
     with open(args.dataset, 'r', encoding='utf-8') as f:
-        for line in f:
-            try:
-                l_data = json.loads(line)
-                data.append(l_data)
-            except Exception as e:
-                count += 1
-    print(f"Total data size: {len(data)}")
-    print(f"Total Error line(s): {count}")
+    data = json.load(f)
     
     dataset = Dataset.from_list(data)
     dataset = dataset.map(formatting_prompts_func, batched=True)
