@@ -109,7 +109,7 @@ def run(args):
     print(f"Total data size: {len(data)}")
     print(f"Total Error line(s): {count}")
     
-    dataset = Dataset.form_list(data)
+    dataset = Dataset.from_list(data)
     dataset = dataset.map(formatting_prompts_func, batched=True)
     print("Data is formatted and ready!")
 
