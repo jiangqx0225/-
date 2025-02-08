@@ -44,7 +44,7 @@ def run(args):
         args = TrainingArguments(
             per_device_train_batch_size=args.per_device_train_batch_size,
             gradient_accumulation_steps=args.gradient_accumulation_steps,
-            warmup_ratio = arg.warmup_ratio,
+            warmup_ratio = args.warmup_ratio,
             # max_steps=args.max_steps,
             num_train_epochs=args.num_train_epochs,
             fp16 = not is_bfloat16_supported(),
