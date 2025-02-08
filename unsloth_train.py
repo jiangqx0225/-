@@ -210,7 +210,7 @@ if __name__ == "__main__":
     training_group.add_argument('--num_train_epochs', type=int, default=3, help="Number of train epochs, default is 3.")
     training_group.add_argument('--gradient_accumulation_steps', type=int, default=8, help="Number of gradient accumulation steps, default is 8.")
     training_group.add_argument('--warmup_steps', type=int, default=5, help="Number of warmup steps, default is 5.")
-    training_group.add_argument('--max_steps', type=int, default=400, help="Maximum number of training steps.")
+    # training_group.add_argument('--max_steps', type=int, default=400, help="Maximum number of training steps.")
     training_group.add_argument('--learning_rate', type=float, default=2e-4, help="Learning rate, default is 2e-4.")
     training_group.add_argument('--optim', type=str, default="adamw_8bit", help="Optimizer type.")
     training_group.add_argument('--weight_decay', type=float, default=0.01, help="Weight decay, default is 0.01.")
