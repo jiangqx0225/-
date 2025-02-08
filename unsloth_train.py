@@ -104,7 +104,7 @@ def run(args):
             try:
                 l_data = json.loads(line)
                 data.append(l_data)
-            except Exceptions as e:
+            except Exception as e:
                 count += 1
     print(f"Total data size: {len(data)}")
     print(f"Total Error line(s): {count}")
