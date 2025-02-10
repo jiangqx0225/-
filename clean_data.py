@@ -1,26 +1,33 @@
 import json
+import argparse
 
+# 设置命令行参数
+parser = argparse.ArgumentParser(description="Transform dataset to instruct-output format.")
+parser.add_argument("--data_path", type=str, required=True, help="Path to the original dataset file.")
+parser.add_argument("--instruction", type=str, required=True, help="Instruction for the dataset.")
+parser.add_argument("--input", type=str, default="", help="Value in the original data to use as input.")
+parser.add_argument("--output", type=str, required=True, help="Value in the original data to use as output.")
 
-instruction = ""  # Define your instruction
-file_path = "" # Define file path
-key = ""
-value = ""
+args = parser.parse_args()
 
-# Original dataset in prompt-completion format
-with open(file_path, "r", encoding='utf-8') as f:
-  original_data = json.load(f)
+# 读取原始数据集
+with open(args.data_path, "r", encoding='utf-8') as f:
+    original_data = json.load(f)
 
-# Transform to instruct-output format
+# 转换为 instruct-output 格式
 transformed_data = []
 
 for item in original_data:
     transformed_item = {
-        "instruction": instruction,
-        "input": item[key],
-        "output": item[value]
+        "instruction": args.instruction,
+        "input": item[args.key],
+        "output": item[args.value]
     }
     transformed_data.append(transformed_item)
 
-# Print the transformed data
-with open("./cleaned_data.json" , "w", encoding="utf-8") as outf:
-  json.dump(transformed_data, outf, ensure_ascii=False, indent=4)
+# 保存转换后的数据
+output_path = f"./{args.data_path}_cleaned_data.json"
+with open(output_path, "w", encoding="utf-8") as outf:
+    json.dump(transformed_data, outf, ensure_ascii=False, indent=4)
+
+print(f"Transformed data saved to {output_path}")
