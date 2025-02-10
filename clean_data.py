@@ -20,8 +20,8 @@ transformed_data = []
 for item in original_data:
     transformed_item = {
         "instruction": args.instruction,
-        "input": item[args.key],
-        "output": item[args.value]
+        "input": item[args.input],
+        "output": item[args.output]
     }
     transformed_data.append(transformed_item)
 
