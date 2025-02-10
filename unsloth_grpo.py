@@ -5,11 +5,20 @@ import torch
 import re
 from datasets import load_dataset, Dataset
 
+# 设置命令行参数
+parser = argparse.ArgumentParser(description="Unsloth GRPO.")
+parser.add_argument("--dataset", type=str, required=True, help="Path to the dataset file.")
+parser.add_argument("--save_path", type=str, default="./unsloth_grpo", help="Path to save the model.")
+parser.add_argument("--model_name", type=str, default="./models/qwen2.5-0.5b-instruct", help="Name of model.")
+# parser.add_argument("--rejected", type=str, default="rejected", help="Value in the original data to use as reject.")
+
+args = parser.parse_args()
+
 max_seq_length = 1024 # Can increase for longer reasoning traces
 lora_rank = 64 # Larger rank = smarter, but slower
 
 model, tokenizer = FastLanguageModel.from_pretrained(
-    model_name = "Qwen/Qwen2.5-3B-Instruct",
+    model_name = args.model_name,
     max_seq_length = max_seq_length,
     load_in_4bit = True, # False for LoRA 16bit
     fast_inference = True, # Enable vLLM fast inference
@@ -60,18 +69,30 @@ def extract_hash_answer(text: str) -> str | None:
     return text.split("####")[1].strip()
 
 # uncomment middle messages for 1-shot prompting
-def get_gsm8k_questions(split = "train") -> Dataset:
-    data = load_dataset('openai/gsm8k', 'main')[split] # type: ignore
-    data = data.map(lambda x: { # type: ignore
-        'prompt': [
-            {'role': 'system', 'content': SYSTEM_PROMPT},
-            {'role': 'user', 'content': x['question']}
-        ],
-        'answer': extract_hash_answer(x['answer'])
-    }) # type: ignore
-    return data # type: ignore
+# def get_gsm8k_questions(split = "train") -> Dataset:
+#     data = load_dataset('openai/gsm8k', 'main')[split] # type: ignore
+#     data = data.map(lambda x: { # type: ignore
+#         'prompt': [
+#             {'role': 'system', 'content': SYSTEM_PROMPT},
+#             {'role': 'user', 'content': x['question']}
+#         ],
+#         'answer': extract_hash_answer(x['answer'])
+#     }) # type: ignore
+#     return data # type: ignore
 
-dataset = get_gsm8k_questions()
+# dataset = get_gsm8k_questions()
+
+with open(args.dataset, 'r', encoding='utf-8') as f:
+    raw_data = json.load(f)
+data = Dataset.from_list(raw_data)
+dataset = data.map(lambda x: { # type: ignore
+    'prompt': [
+        {'role': 'system', 'content': SYSTEM_PROMPT},
+        {'role': 'user', 'content': x['question']}
+    ],
+    'answer': extract_hash_answer(x['answer'])
+})
+
 
 # Reward functions
 def correctness_reward_func(prompts, completions, answer, **kwargs) -> list[float]:
@@ -159,4 +180,4 @@ trainer = GRPOTrainer(
 )
 trainer.train()
 
-model.save_pretrained_merged("model", tokenizer, save_method = "merged_16bit",)
+model.save_pretrained_merged(args.save_path, tokenizer, save_method = "merged_16bit",)
