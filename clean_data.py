@@ -11,7 +11,7 @@ parser.add_argument("--output", type=str, default="output", help="Value in the o
 args = parser.parse_args()
 
 # 读取原始数据集
-with open(args.data_path, "r", encoding='utf-8') as f:
+with open(args.data, "r", encoding='utf-8') as f:
     original_data = json.load(f)
 
 # 转换为 instruct-output 格式
@@ -26,7 +26,7 @@ for item in original_data:
     transformed_data.append(transformed_item)
 
 # 保存转换后的数据
-output_path = f"./{args.data_path}_cleaned_data.json"
+output_path = f"./{args.data}_cleaned_data.json"
 with open(output_path, "w", encoding="utf-8") as outf:
     json.dump(transformed_data, outf, ensure_ascii=False, indent=4)
 
