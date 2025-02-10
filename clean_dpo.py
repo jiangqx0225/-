@@ -3,10 +3,10 @@ import argparse
 
 # 设置命令行参数
 parser = argparse.ArgumentParser(description="Transform dataset to instruct-output format.")
-parser.add_argument("--data_path", type=str, required=True, help="Path to the original dataset file.")
-parser.add_argument("--prompt", type=str, default="", help="Instruction for the dataset.")
-parser.add_argument("--chosen", type=str, required=True, help="Value in the original data to use as chosen.")
-parser.add_argument("--rejected", type=str, required=True, help="Value in the original data to use as reject.")
+parser.add_argument("--data", type=str, required=True, help="Path to the original dataset file.")
+parser.add_argument("--prompt", type=str, default="prompt", help="Instruction for the dataset.")
+parser.add_argument("--chosen", type=str, default="chosen", help="Value in the original data to use as chosen.")
+parser.add_argument("--rejected", type=str, default="rejected", help="Value in the original data to use as reject.")
 
 args = parser.parse_args()
 
@@ -19,7 +19,7 @@ transformed_data = []
 
 for item in original_data:
     transformed_item = {
-        "prompt": args.instruction,
+        "prompt": item[args.prompt],
         "chosen": item[args.chosen],
         "rejected": item[args.rejected]
     }
