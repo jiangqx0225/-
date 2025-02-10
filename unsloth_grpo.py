@@ -3,6 +3,7 @@ PatchFastRL("GRPO", FastLanguageModel)
 from unsloth import is_bfloat16_supported
 import torch
 import re
+import json
 from datasets import load_dataset, Dataset
 
 # 设置命令行参数
